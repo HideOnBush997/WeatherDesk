@@ -1,12 +1,21 @@
 # WeatherDesk
 
-WeatherDesk is a .NET 8 and Avalonia desktop weather app with a weather-focused AI assistant. Weather data comes from Open-Meteo. The default AI mode is Demo, so the app can be exercised without a DeepSeek key.
+WeatherDesk 是一个基于 .NET 8 和 Avalonia 的 Windows 优先天气桌面应用，包含天气查询和天气出行 AI 助手。天气数据来自 Open-Meteo，默认使用本地 Demo 回答引擎，不配置 DeepSeek Key 也可以运行。
 
-## Current Status
+## 功能
 
-M0 through M12 are implemented. The Avalonia MVVM workspace provides weather search and display, current/hourly/7-day forecasts, cached fallback, favorites and recent cities, startup recovery, an in-app settings panel, runtime theme and temperature-unit selection, and a constrained weather Agent. The default Demo mode needs no AI credential.
+- 中国大陆城市、省、市辖区和县的搜索联想
+- 当前天气、未来 48 小时逐小时预报和未来 7 天预报
+- 天气缓存和网络异常降级
+- 收藏城市、最近访问和启动恢复
+- AI 出行助手，支持天气、穿衣、跑步、通勤、旅游和路线天气问题
+- Auto、Demo、DeepSeek 三种 AI 模式
+- 温度单位、主题和 DeepSeek 配置
+- SQLite 持久化失败时自动降级到进程内存储
 
-## Build and Test
+## 构建和运行
+
+在项目根目录执行：
 
 ```powershell
 dotnet restore WeatherDesk.sln
@@ -14,16 +23,43 @@ dotnet build WeatherDesk.sln
 dotnet test WeatherDesk.sln
 ```
 
-On Windows, run `src/WeatherDesk.App/bin/Debug/net8.0/WeatherDesk.App.exe`. Settings are stored below `%LOCALAPPDATA%\\WeatherDesk`; the API key is protected in `credentials.dat` and is never written to `settings.json`. Selecting Demo mode requires no network AI credential. SQLite failures fall back to in-memory cache, city, and last-city state for the current process.
+Windows 下可以运行：
 
-The main window can be used without configuration: search for a city, select it, and use the weather display and chat assistant. The Settings panel accepts `Auto`, `Demo`, or `DeepSeek`, stores the selected unit and theme, and masks the saved key. In `Auto`, DeepSeek is selected only when a key is present; failures fall back to Demo.
+```powershell
+src/WeatherDesk.App/bin/Debug/net8.0/WeatherDesk.App.exe
+```
 
-GitHub Actions runs restore, Release build, and solution tests on every push and pull request.
+Release 版本：
 
-## Implementation Assumptions
+```powershell
+src/WeatherDesk.App/bin/Release/net8.0/WeatherDesk.App.exe
+```
 
-- M1: The question analyzer remains a pure function. M6 supplies `AgentContext.Today` from `IClock.TodayIn`; without it, only ISO dates are resolved. Weekdays resolve to the nearest future date, with the current weekday meaning today. Weather advice uses the thresholds documented in `doc/prompt.md` section 14.
-- M3: The weather snapshot records its hourly query date. Missing optional values represented by non-nullable domain fields default to `0`; nullable visibility, UV, sunrise, and sunset values remain null.
-- M3: A refresh is keyed by `Location.Id`. A newer refresh for the same city cancels the older one, while different cities refresh independently.
-- M10: Weather values remain in Celsius in the domain and are converted only for display; timestamps use the selected city's UTC offset when available.
-- M12: The repository's final verification is `dotnet restore`, `dotnet build`, and `dotnet test`; the Windows CI workflow runs the same checks in Release configuration.
+## AI 模式
+
+- **Auto**：配置了 DeepSeek API Key 时调用 DeepSeek；没有 Key 或调用失败时使用本地 Demo 回答。
+- **Demo**：完全使用本地规则和天气数据生成基础建议，不需要 AI Key。
+- **DeepSeek**：强制调用 DeepSeek，需要在设置中填写有效 API Key。
+
+应用设置保存在 `%LOCALAPPDATA%\\WeatherDesk`。API Key 会加密保存到 `credentials.dat`，不会写入 `settings.json`。
+
+## 使用方式
+
+启动应用后搜索城市并选择地点，左侧显示天气预报，右侧可以询问天气相关问题，例如：
+
+- `武汉明天适合跑步吗`
+- `我要去武汉旅游 7 天，需要注意什么`
+- `武汉去北京，路上应该怎么穿衣`
+
+## 自动化验证
+
+GitHub Actions 会在每次 Push 和 Pull Request 时自动执行还原、Release 构建和完整测试。
+
+当前本地验证结果：Release 构建 0 个警告、0 个错误，测试 `178/178` 通过。
+
+## 实现说明
+
+- 天气领域数据统一使用摄氏度，界面根据设置转换显示单位。
+- 时间显示优先使用所选城市的时区偏移。
+- 天气缓存、城市状态和最近城市状态在 SQLite 失败时降级到当前进程内存。
+- 本地离线地名库优先用于搜索联想，找不到时再调用地理服务兜底。
