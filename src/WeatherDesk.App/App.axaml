@@ -1,0 +1,70 @@
+<Application xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             x:Class="WeatherDesk.App.App"
+             RequestedThemeVariant="Light">
+
+    <Application.Styles>
+        <FluentTheme />
+        <Style Selector="Window">
+            <Setter Property="Background" Value="#F2F8FF" />
+            <Setter Property="Foreground" Value="#17324D" />
+        </Style>
+        <Style Selector="Button">
+            <Setter Property="Background" Value="#0B76E8" />
+            <Setter Property="Foreground" Value="White" />
+            <Setter Property="FontWeight" Value="SemiBold" />
+        </Style>
+        <Style Selector="Button:pointerover">
+            <Setter Property="Background" Value="#8CC8FF" />
+            <Setter Property="Foreground" Value="#17324D" />
+        </Style>
+        <Style Selector="Button:pressed">
+            <Setter Property="Background" Value="#5BAAF2" />
+            <Setter Property="Foreground" Value="#17324D" />
+        </Style>
+        <Style Selector="TextBox">
+            <Setter Property="Background" Value="White" />
+            <Setter Property="Foreground" Value="#17324D" />
+            <Setter Property="BorderBrush" Value="#8CC8FF" />
+        </Style>
+        <Style Selector="TextBox /template/ Border#PART_BorderElement">
+            <Setter Property="Background" Value="White" />
+            <Setter Property="BorderBrush" Value="#8CC8FF" />
+        </Style>
+        <Style Selector="TextBox:focus">
+            <Setter Property="Background" Value="White" />
+            <Setter Property="Foreground" Value="#17324D" />
+            <Setter Property="BorderBrush" Value="#8CC8FF" />
+            <Setter Property="CaretBrush" Value="#17324D" />
+        </Style>
+        <Style Selector="TextBox:pointerover">
+            <Setter Property="Background" Value="White" />
+            <Setter Property="Foreground" Value="#17324D" />
+        </Style>
+        <Style Selector="TextBox:focus /template/ Border#PART_BorderElement">
+            <Setter Property="Background" Value="White" />
+            <Setter Property="BorderBrush" Value="#8CC8FF" />
+        </Style>
+        <Style Selector="TextBox:pointerover /template/ Border#PART_BorderElement">
+            <Setter Property="Background" Value="White" />
+        </Style>
+        <Style Selector="ComboBox">
+            <Setter Property="Background" Value="White" />
+            <Setter Property="Foreground" Value="#17324D" />
+            <Setter Property="BorderBrush" Value="#8CC8FF" />
+        </Style>
+        <Style Selector="ListBox">
+            <Setter Property="Background" Value="#E4F2FF" />
+            <Setter Property="BorderBrush" Value="#9BD1FF" />
+        </Style>
+        <Style Selector="Button:pointerover /template/ Border#PART_OuterBorder">
+            <Setter Property="Background" Value="#8CC8FF" />
+        </Style>
+        <Style Selector="Button:pointerover /template/ Border#PART_LayoutRoot">
+            <Setter Property="Background" Value="#8CC8FF" />
+        </Style>
+        <Style Selector="Button:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+            <Setter Property="Foreground" Value="#17324D" />
+        </Style>
+    </Application.Styles>
+</Application>

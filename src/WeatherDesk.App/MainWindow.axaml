@@ -1,0 +1,80 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d"
+        d:DesignWidth="960"
+        d:DesignHeight="600"
+        x:Class="WeatherDesk.App.MainWindow"
+        Icon="/Assets/weather.png"
+        Width="960"
+        Height="600"
+        MinWidth="720"
+        MinHeight="480"
+        Title="WeatherDesk">
+    <Grid RowDefinitions="Auto,*" Margin="18" RowSpacing="14" Background="#F2F8FF">
+        <Grid ColumnDefinitions="*,Auto" ColumnSpacing="12">
+            <StackPanel Orientation="Horizontal" Spacing="10">
+                <Border Background="#0B76E8" CornerRadius="12" Padding="12,6">
+                    <StackPanel Orientation="Horizontal" Spacing="8">
+                        <Image Source="/Assets/weather.png" Width="28" Height="28" />
+                        <TextBlock Text="WeatherDesk" FontSize="24" FontWeight="SemiBold" Foreground="White" VerticalAlignment="Center" />
+                    </StackPanel>
+                </Border>
+                <TextBlock Text="{Binding StatusMessage}" Foreground="#E07800" FontWeight="SemiBold" VerticalAlignment="Center" />
+            </StackPanel>
+            <Button Grid.Column="1" Content="设置" Click="Settings_Click" Padding="14,8" />
+        </Grid>
+        <Grid Grid.Row="1" ColumnDefinitions="3*,2*" ColumnSpacing="14">
+            <Grid RowDefinitions="Auto,Auto,*" RowSpacing="12">
+                <Grid ColumnDefinitions="*,Auto" ColumnSpacing="8">
+                    <TextBox Watermark="搜索城市" Text="{Binding Search.Keyword}" TextChanged="CitySearch_TextChanged" />
+                    <Button Grid.Column="1" Content="搜索" Command="{Binding Search.SearchCommand}" Padding="12,6" />
+                </Grid>
+                <ListBox Grid.Row="1" ItemsSource="{Binding Search.Results}" IsVisible="{Binding Search.HasResults}" MaxHeight="140">
+                    <ListBox.ItemTemplate><DataTemplate><Button Content="{Binding SearchDisplayName}" Click="CityResult_Click" HorizontalContentAlignment="Left" /></DataTemplate></ListBox.ItemTemplate>
+                </ListBox>
+                <ScrollViewer Grid.Row="2">
+                    <StackPanel Spacing="10">
+                        <TextBlock Text="{Binding CurrentCity.WeatherDisplayName}" FontSize="22" FontWeight="SemiBold" Foreground="#123E68" />
+                        <Border Background="#1687EA" CornerRadius="14" Padding="18">
+                            <StackPanel Spacing="6"><TextBlock Text="当前天气" Foreground="White" /><TextBlock Text="{Binding Weather.CurrentTemperature}" FontSize="38" Foreground="White" /><TextBlock Text="{Binding Weather.ConditionText}" Foreground="White" /><TextBlock Text="{Binding Weather.ObservedAtText}" Foreground="White" /><TextBlock Text="{Binding Weather.SourceText}" Foreground="White" /></StackPanel>
+                        </Border>
+                        <TextBlock Text="{Binding Weather.StatusMessage}" />
+                        <TextBlock Text="未来 48 小时" FontWeight="SemiBold" Foreground="#0B5CAD" />
+                        <ScrollViewer x:Name="HourlyScrollViewer" HorizontalScrollBarVisibility="Hidden" VerticalScrollBarVisibility="Hidden"
+                                      PointerPressed="HourlyScroll_PointerPressed" PointerMoved="HourlyScroll_PointerMoved" PointerReleased="HourlyScroll_PointerReleased"
+                                      PointerCaptureLost="HourlyScroll_PointerCaptureLost">
+                            <ItemsControl ItemsSource="{Binding Weather.HourlyItems}"><ItemsControl.ItemsPanel><ItemsPanelTemplate><StackPanel Orientation="Horizontal" /></ItemsPanelTemplate></ItemsControl.ItemsPanel><ItemsControl.ItemTemplate><DataTemplate><Border Background="#E6F3FF" CornerRadius="10" Padding="10" Margin="0,0,8,0" Width="125"><StackPanel Spacing="5"><TextBlock Text="{Binding DateTimeText}" FontSize="12" /><TextBlock Text="{Binding TemperatureText}" FontSize="20" FontWeight="SemiBold" /><TextBlock Text="{Binding ConditionText}" /></StackPanel></Border></DataTemplate></ItemsControl.ItemTemplate></ItemsControl>
+                        </ScrollViewer>
+                        <TextBlock Text="未来 7 天" FontWeight="SemiBold" Foreground="#0B5CAD" />
+                        <ScrollViewer Height="250" VerticalScrollBarVisibility="Auto">
+                            <ItemsControl ItemsSource="{Binding Weather.DailyItems}"><ItemsControl.ItemTemplate><DataTemplate><Grid ColumnDefinitions="120,110,*" Margin="0,5"><TextBlock Text="{Binding DateText}" /><TextBlock Grid.Column="1" Text="{Binding TemperatureText}" /><TextBlock Grid.Column="2" Text="{Binding ConditionText}" /></Grid></DataTemplate></ItemsControl.ItemTemplate></ItemsControl>
+                        </ScrollViewer>
+                    </StackPanel>
+                </ScrollViewer>
+            </Grid>
+            <Border Grid.Column="1" BorderBrush="#D0D7DE" BorderThickness="1" CornerRadius="8" Padding="14">
+                <Grid RowDefinitions="Auto,*,Auto" RowSpacing="10">
+                    <TextBlock Text="AI 出行助手" FontSize="20" FontWeight="SemiBold" Foreground="#0B5CAD" />
+                    <ScrollViewer x:Name="ChatScrollViewer" Grid.Row="1" VerticalScrollBarVisibility="Hidden" HorizontalScrollBarVisibility="Disabled"><ItemsControl ItemsSource="{Binding Chat.Messages}" HorizontalAlignment="Stretch"><ItemsControl.ItemTemplate><DataTemplate><Border Padding="8" Margin="0,3" CornerRadius="8" HorizontalAlignment="Stretch" MaxWidth="340" Background="{Binding MessageBackground}"><StackPanel Spacing="3"><TextBlock Text="{Binding SpeakerText}" FontWeight="SemiBold" Foreground="{Binding SpeakerLabelColor}" /><TextBlock Text="{Binding Text}" TextWrapping="Wrap" MaxWidth="320" /></StackPanel></Border></DataTemplate></ItemsControl.ItemTemplate></ItemsControl></ScrollViewer>
+                    <Grid Grid.Row="2" ColumnDefinitions="*,Auto" ColumnSpacing="8"><TextBox Text="{Binding Chat.InputText}" Watermark="问问天气…" /><Button Grid.Column="1" Content="发送" Command="{Binding Chat.SendCommand}" Padding="12,6" /></Grid>
+                </Grid>
+            </Border>
+        </Grid>
+        <Border Grid.Row="1" IsVisible="{Binding IsSettingsOpen}" Background="#FFF7E6" BorderBrush="#FFC857" BorderThickness="2" CornerRadius="14" Padding="18" HorizontalAlignment="Right" Width="340" ZIndex="2">
+            <StackPanel Spacing="10">
+                <Grid ColumnDefinitions="*,Auto">
+                    <TextBlock Text="设置" FontSize="20" FontWeight="SemiBold" />
+                    <Button Grid.Column="1" Content="关闭" Click="CloseSettings_Click" Padding="10,5" />
+                </Grid>
+                <TextBlock Text="AI 模式" /><ComboBox ItemsSource="{Binding Settings.Modes}" SelectedItem="{Binding Settings.Mode}" />
+                <TextBlock Text="Base URL" /><TextBox Text="{Binding Settings.BaseUrl}" />
+                <TextBlock Text="模型" /><TextBox Text="{Binding Settings.Model}" />
+                <TextBlock Text="API Key（输入后仅显示脱敏结果）" /><TextBox PasswordChar="●" Text="{Binding Settings.ApiKeyInput}" />
+                <TextBlock Text="已保存 API Key" /><TextBlock Text="{Binding Settings.MaskedApiKey}" />
+                <Button Content="保存设置" Command="{Binding Settings.SaveCommand}" />
+            </StackPanel>
+        </Border>
+    </Grid>
+</Window>
