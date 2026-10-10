@@ -13,6 +13,21 @@ WeatherDesk 是一个基于 .NET 8 和 Avalonia 的 Windows 优先天气桌面�
 - 温度单位、主题和 DeepSeek 配置
 - SQLite 持久化失败时自动降级到进程内存储
 
+## 架构设计
+
+项目采用分层架构，按职责拆分为四个部分：
+
+- **WeatherDesk.App**：Avalonia 界面、窗口事件、数据绑定和 ViewModel，负责交互与状态展示。
+- **WeatherDesk.Domain**：天气模型、地点模型、问题分析、日期解析、缓存策略和业务规则，不依赖 Avalonia 或具体网络服务。
+- **WeatherDesk.Infrastructure**：Open-Meteo 地理编码和天气客户端、DeepSeek/Demo AI 适配器、SQLite 存储、缓存和配置保护。
+- **WeatherDesk.Tests**：领域规则、天气查询、持久化、AI 适配器和 ViewModel 的自动化测试。
+
+依赖方向由界面层指向领域层，基础设施层通过领域接口提供具体实现，避免业务规则直接依赖网络 API 或数据库。这样可以在不改动界面的情况下替换天气服务、AI 服务或存储实现，也方便对核心规则进行独立测试。
+
+天气查询流程是“搜索地点 → 解析坐标 → 请求天气 → 写入缓存 → 更新 ViewModel”；网络失败时读取最近缓存并提示数据可能过期。AI 对话流程是“分析问题 → 复用当前地点或解析地点 → 获取结构化天气数据 → 选择 DeepSeek 或本地 Demo → 展示回答”，天气数据先由程序获取，再交给 AI 生成建议，避免 AI 自行编造天气数值。
+
+更详细的模块接口、数据模型和异常处理说明见 [`doc/high-level-design.md`](doc/high-level-design.md) 和 [`doc/detailed-design.md`](doc/detailed-design.md)。
+
 ## 构建和运行
 
 在项目根目录执行：
