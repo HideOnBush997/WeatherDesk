@@ -26,7 +26,7 @@ WeatherDesk 是一个基于 .NET 8 和 Avalonia 的 Windows 优先天气桌面�
 
 天气查询流程是“搜索地点 → 解析坐标 → 请求天气 → 写入缓存 → 更新 ViewModel”；网络失败时读取最近缓存并提示数据可能过期。AI 对话流程是“分析问题 → 复用当前地点或解析地点 → 获取结构化天气数据 → 选择 DeepSeek 或本地 Demo → 展示回答”，天气数据先由程序获取，再交给 AI 生成建议，避免 AI 自行编造天气数值。
 
-更详细的模块接口、数据模型和异常处理说明见 [`doc/high-level-design.md`](doc/high-level-design.md) 和 [`doc/detailed-design.md`](doc/detailed-design.md)。
+README 中已包含项目提交所需的功能说明、设计原因和架构概览。
 
 ## 构建和运行
 
