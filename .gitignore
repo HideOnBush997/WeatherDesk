@@ -1,6 +1,8 @@
 **/bin/
 **/obj/
 artifacts/
+doc/
+docs/
 .vs/
 .idea/
 .vscode/
